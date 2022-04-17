@@ -9,7 +9,8 @@
     return document.querySelectorAll(target)
   }
 
-  const keys = Array.from(getAll('.keys'))
+  const keys = Array.from(getAll('.key'))
+
   const soundsRoot = 'assets/sounds/'
   const drumSounds = [
     { key: 81, sound: 'clap.wav' },
@@ -30,17 +31,30 @@
     return audio
   }
 
-  const playSound = (keyCode) => {
-    const $audio = get(`audio[data-key="${keyCode}"]`)
-    if ($audio) {
+  const playSound = (keycode) => {
+    const $audio = get(`audio[data-key="${keycode}"]`)
+    const $key = get(`div[data-key="${keycode}"]`)
+    if ($audio && $key) {
+      $key.classList.add('playing')
       $audio.currentTime = 0
       $audio.play()
     }
   }
 
   const onKeyDown = (e) => {
-    console.log(e.keyCode)
     playSound(e.keyCode)
+  }
+
+  const onMouseDown = (e) => {
+    const keycode = e.target.getAttribute('data-key')
+    console.log(keycode)
+    playSound(keycode)
+  }
+
+  const onTransitionEnd = (e) => {
+    if (e.propertyName === 'transform') {
+      e.target.classList.remove('playing')
+    }
   }
 
   const init = () => {
@@ -49,6 +63,8 @@
       const audio = getAudioElement(index)
       key.appendChild(audio) // key 안에 아무것도 없음 html 파일 보면 - appendChild 이용 
       key.dataset.key = drumSounds[index].key
+      key.addEventListener('click', onMouseDown)
+      key.addEventListener('transitionend', onTransitionEnd)
     })
   }
 
