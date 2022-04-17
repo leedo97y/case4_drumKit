@@ -9,6 +9,7 @@
     return document.querySelectorAll(target)
   }
 
+  const keys = Array.from(getAll('.keys'))
   const soundsRoot = 'assets/sounds/'
   const drumSounds = [
     { key: 81, sound: 'clap.wav' },
@@ -21,4 +22,35 @@
     { key: 88, sound: 'snare.wav' },
     { key: 67, sound: 'tom.wav' },
   ]
+
+  const getAudioElement = (index) => {
+    const audio = document.createElement('audio')
+    audio.dataset.key = drumSounds[index].key
+    audio.src = soundsRoot + drumSounds[index].sound
+    return audio
+  }
+
+  const playSound = (keyCode) => {
+    const $audio = get(`audio[data-key="${keyCode}"]`)
+    if ($audio) {
+      $audio.currentTime = 0
+      $audio.play()
+    }
+  }
+
+  const onKeyDown = (e) => {
+    console.log(e.keyCode)
+    playSound(e.keyCode)
+  }
+
+  const init = () => {
+    window.addEventListener('keydown', onKeyDown)
+    keys.forEach((key, index) => {
+      const audio = getAudioElement(index)
+      key.appendChild(audio) // key 안에 아무것도 없음 html 파일 보면 - appendChild 이용 
+      key.dataset.key = drumSounds[index].key
+    })
+  }
+
+  init()
 })()
